@@ -85,7 +85,14 @@ always @(posedge clk or negedge rstn) begin
 
 always @(posedge clk or negedge rstn) begin
     if(rstn == 1'b0)begin
-      
+        converttime <= 32'b0;
+    end
+    else begin
+        if (flag == 1'b1)begin
+            if (converttime == convert_time) converttime <= 32'b0;
+            else converttime <= converttime + 1;
+        end
+        else converttime <= 32'b0;
     end
 end
 
