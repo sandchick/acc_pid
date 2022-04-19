@@ -1,6 +1,6 @@
 module adc #(parameter convert_time = 10us
             parameter  = ;)(
-    input clk,
+    input clk,             //时钟信号
     input rstn,
     input real anadata,
     input start,              //开始转换信号
