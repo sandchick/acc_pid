@@ -3,7 +3,6 @@ module apbtoadc(
   input  wire         PRESETn,     // APB reset
   input  wire         PENABLE,     // APB enable
   input  wire         PSEL,        // APB periph select
-  input  wire [11:2]  PADDR,       // APB address bus
   input  wire         PWRITE,      // APB write
   output  wire [31:0]  PRDATA,      // APB write data
 

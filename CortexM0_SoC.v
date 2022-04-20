@@ -178,19 +178,19 @@ wire            HREADYOUT_P2;
 wire    [31:0]  HRDATA_P2;
 wire            HRESP_P2;
 
-wire            HSEL_P3;
-wire    [31:0]  HADDR_P3;
-wire    [2:0]   HBURST_P3;
-wire            HMASTLOCK_P3;
-wire    [3:0]   HPROT_P3;
-wire    [2:0]   HSIZE_P3;
-wire    [1:0]   HTRANS_P3;
-wire    [31:0]  HWDATA_P3;
-wire            HWRITE_P3;
-wire            HREADY_P3;
-wire            HREADYOUT_P3;
-wire    [31:0]  HRDATA_P3;
-wire            HRESP_P3;
+//wire            HSEL_P3;
+//wire    [31:0]  HADDR_P3;
+//wire    [2:0]   HBURST_P3;
+//wire            HMASTLOCK_P3;
+//wire    [3:0]   HPROT_P3;
+//wire    [2:0]   HSIZE_P3;
+//wire    [1:0]   HTRANS_P3;
+//wire    [31:0]  HWDATA_P3;
+//wire            HWRITE_P3;
+//wire            HREADY_P3;
+//wire            HREADYOUT_P3;
+//wire    [31:0]  HRDATA_P3;
+//wire            HRESP_P3;
 
 AHBlite_Interconnect Interconncet(
         .HCLK           (clk),
@@ -255,19 +255,19 @@ AHBlite_Interconnect Interconncet(
         .HRESP_P2       (HRESP_P2),
 
         // P3
-        .HSEL_P3        (HSEL_P3),
-        .HADDR_P3       (HADDR_P3),
-        .HBURST_P3      (HBURST_P3),
-        .HMASTLOCK_P3   (HMASTLOCK_P3),
-        .HPROT_P3       (HPROT_P3),
-        .HSIZE_P3       (HSIZE_P3),
-        .HTRANS_P3      (HTRANS_P3),
-        .HWDATA_P3      (HWDATA_P3),
-        .HWRITE_P3      (HWRITE_P3),
-        .HREADY_P3      (HREADY_P3),
-        .HREADYOUT_P3   (HREADYOUT_P3),
-        .HRDATA_P3      (HRDATA_P3),
-        .HRESP_P3       (HRESP_P3)
+  //      .HSEL_P3        (HSEL_P3),
+  //      .HADDR_P3       (HADDR_P3),
+  //      .HBURST_P3      (HBURST_P3),
+  //      .HMASTLOCK_P3   (HMASTLOCK_P3),
+  //      .HPROT_P3       (HPROT_P3),
+  //      .HSIZE_P3       (HSIZE_P3),
+  //      .HTRANS_P3      (HTRANS_P3),
+  //      .HWDATA_P3      (HWDATA_P3),
+  //      .HWRITE_P3      (HWRITE_P3),
+  //      .HREADY_P3      (HREADY_P3),
+  //      .HREADYOUT_P3   (HREADYOUT_P3),
+  //      .HRDATA_P3      (HRDATA_P3),
+  //      .HRESP_P3       (HRESP_P3)
 );
 
 //------------------------------------------------------------------------------
@@ -331,8 +331,24 @@ AHBlite_Sram RAMDATA_Interface(
         /**********************************/
 );
 
+//-------------------------------------------
+//APB bridge
+//-------------------------------------------
 
-AHBlite_ADC ADC_Interface(
+   wire          [13:0] PADDR;     // APB Address
+   wire                 PENABLE;   // APB Enable
+   wire                 PWRITE;    // APB Write
+   wire           [3:0] PSTRB;     // APB Byte Strobe
+   wire           [2:0] PPROT;     // APB Prot
+   wire          [31:0] PWDATA;    // APB write data
+   wire                 PSEL;      // APB Selectoo
+   wire                 APBACTIVE; // APB bus is active, for clock gating
+                                    // of APB bus
+   wire          [31:0] PRDATA;    // Read data for each APB slave
+   wire                 PREADY;    // Ready for each APB slave
+   wire                 PSLVERR;  // Error state for each APB slave
+
+AHBlite_APB AHB2apb(
         /* Connect to Interconnect Port 2 */
         .HCLK                   (clk),
         .HRESETn                (cpuresetn),
@@ -347,29 +363,85 @@ AHBlite_ADC ADC_Interface(
         .HREADYOUT              (HREADYOUT_P2),
         .HRDATA                 (HRDATA_P2),
         .HRESP                  (HRESP_P2),
-        .data_in                (data_adc)
+        .PADDR                  (PADDR)  ,
+        .PENABLE                (PENABLE),
+        .PWRITE                 (PWRITE) ,
+        .PSTRB                  (PSTRB)  ,
+        .PPROT                  (PPROT)  ,
+        .PWDATA                 (PWDATA) ,
+        .PSEL                   (PSEL)   ,
+        .APBACTIVE              (APBACTIVE)
+        .PRDATA                 (PRDATA) ,
+        .PREADY                 (PREADY) ,
+        .PSLVERR                (PSLVERR)
 );
 
-//------------------------------------------------------------------------------
-// AHB ACC
-//------------------------------------------------------------------------------
 
+wire [3:0]DECODE4BIT;
+wire PSEL;
 
-//AHBlite_ACC ACC_Interface(
-//        .HCLK           (clk),
-//        .HRESETn        (cpuresetn),
-//        .HSEL           (HSEL_P3),
-//        .HADDR          (HADDR_P3),
-//        .HTRANS         (HTRANS_P3),
-//        .HSIZE          (HSIZE_P3),
-//        .HPROT          (HPROT_P3),
-//        .HWRITE         (HWRITE_P3),
-//        .HWDATA         (HWDATA_P3),
-//        .HREADY         (HREADY_P3),
-//        .HREADYOUT      (HREADYOUT_P3),
-//        .HRDATA         (HRDATA_P3),
-//        .HRESP          (HRESP_P3)
-//);
+wire PSEL0;
+wire PREADY0;
+wire [31:0]  PRDATA0;
+wire PSLVERR0;
+wire PSEL1;
+wire PREADY1;
+wire [31:0]  PRDATA1;
+wire PSLVERR1;
+wire PSEL2;
+wire PREADY2;
+wire [31:0]  PRDATA2;
+wire PSLVERR2;
+wire PSEL3;
+wire PREADY3;
+wire [31:0]  PRDATA3;
+wire PSLVERR3;
+
+apb_mux apb_slave_mux(
+        .PSEL0          (PSEL0),
+        .PSEL1          (PSEL1),
+        .PSEL2          (PSEL2),
+        .PSEL3          (PSEL3),
+        .PREADY0        (PREADY0),
+        .PREADY1        (PREADY1),
+        .PREADY2        (PREADY2),
+        .PREADY3        (PREADY3),
+        .PRDATA0        (PRDATA0),
+        .PRDATA1        (PRDATA1),
+        .PRDATA2        (PRDATA2),
+        .PRDATA3        (PRDATA3),
+        .PSLVERR0       (PSLVERR0),
+        .PSLVERR1       (PSLVERR1),
+        .PSLVERR2       (PSLVERR2),
+        .PSLVERR3       (PSLVERR3),
+        .PREADY0        (PREADY0),
+        .PREADY1        (PREADY1),
+        .PREADY2        (PREADY2),
+        .PREADY3        (PREADY3)
+)
+wire [11:0] ADC_DATA;
+apb_adc apb2adc(
+        .PCLK           (HCLK),
+        .PRESETn        (HRESETn),
+        .PENABLE        (PENABLE),
+        .PSEL           (PSEL0),
+        .PWRITE         (PWRITE),
+        .PRDATA         (PRDATA0),
+        .ADC_DATA       (ADC_DATA)
+        
+);
+//--------------
+//adc
+//--------------
+uadc adc(
+        .clk            (),
+        .rstn           (),
+        .anadata        (realdata),
+        .start          (),
+        .OE             (),
+        .EOC            (),
+        .adc_data       (ADC_DATA)
+)
 
 //------------------------------------------------------------------------------
 // RAM

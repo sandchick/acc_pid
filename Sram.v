@@ -27,16 +27,7 @@ localparam AWT = ((1<<(AW-0))-1);
   initial begin
     $readmemh("D:/cortexm0acc/code/code.hex",BRAM);
   end
-//initial begin
-//   $readmemh("D:/cortexm0acc/code/code.hex",BRAM1);
-// end
-// initial begin
-//   $readmemh("D:/cortexm0acc/code/code.hex",BRAM2);
-// end
-// initial begin
-//   $readmemh("D:/cortexm0acc/code/code.hex",BRAM3);
-// end
-  // Internal signals
+
   reg     [AW-1:0]  addr_q1;
   wire    [3:0]     write_enable;
   reg               cs_reg;
