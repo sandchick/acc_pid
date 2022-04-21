@@ -424,12 +424,24 @@ apb_adc apb2adc(
         .PCLK           (HCLK),
         .PRESETn        (HRESETn),
         .PENABLE        (PENABLE),
+        .PREADY         (PREADY0),
         .PSEL           (PSEL0),
         .PWRITE         (PWRITE),
         .PRDATA         (PRDATA0),
         .ADC_DATA       (ADC_DATA)
         
 );
+
+
+apb_pwm apb2pwm(
+        .PCLK           (HCLK),
+        .PRESETn        (HRESETn),
+        .PENABLE        (PENABLE),
+        .PREADY         (PREADY1),
+        .PSEL           (PSEL1),
+        .PWRITE         (PWRITE),
+        .PRDATA         (PRDATA1)
+)
 //--------------
 //adc
 //--------------
@@ -442,7 +454,14 @@ uadc adc(
         .EOC            (),
         .adc_data       (ADC_DATA)
 )
-
+//------------
+//PWM
+//------------
+upwm pwm(
+        .clk            (),
+        .rstn           (),
+        .enable         ()
+)
 //------------------------------------------------------------------------------
 // RAM
 //------------------------------------------------------------------------------

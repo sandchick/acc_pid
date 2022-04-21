@@ -5,7 +5,7 @@ module apbtoadc(
   input  wire         PSEL,        // APB periph select
   input  wire         PWRITE,      // APB write
   output  wire [31:0]  PRDATA,      // APB write data
-
+  output wire PREADY,
   input wire [11:0]  ADC_DATA
 );
 reg full;
@@ -38,4 +38,5 @@ always @(posedge PCLK or negedge PRESETn) begin
 end
 
 assign wr_en = ~full | ready;
+assign PREADY = 1'b1;
 endmodule
