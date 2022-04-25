@@ -4,7 +4,7 @@ module CortexM0_SoC #(parameter DATA_WIDTH = 8)(
         input   wire         RSTn,
         inout   wire         SWDIO,  
         input   wire         SWCLK,
-        input   wire        [DATA_WIDTH - 1:0] data_dac
+        input   wire        [DATA_WIDTH - 1:0] data_adc
 );
 
 //------------------------------------------------------------------------------
@@ -252,7 +252,7 @@ AHBlite_Interconnect Interconncet(
         .HREADY_P2      (HREADY_P2),
         .HREADYOUT_P2   (HREADYOUT_P2),
         .HRDATA_P2      (HRDATA_P2),
-        .HRESP_P2       (HRESP_P2),
+        .HRESP_P2       (HRESP_P2)
 
         // P3
   //      .HSEL_P3        (HSEL_P3),
@@ -348,7 +348,7 @@ AHBlite_Sram RAMDATA_Interface(
    wire                 PREADY;    // Ready for each APB slave
    wire                 PSLVERR;  // Error state for each APB slave
 
-AHBlite_APB AHB2apb(
+ AHB2apb AHB_apb(
         /* Connect to Interconnect Port 2 */
         .HCLK                   (clk),
         .HRESETn                (cpuresetn),
@@ -370,7 +370,7 @@ AHBlite_APB AHB2apb(
         .PPROT                  (PPROT)  ,
         .PWDATA                 (PWDATA) ,
         .PSEL                   (PSEL)   ,
-        .APBACTIVE              (APBACTIVE)
+        .APBACTIVE              (APBACTIVE),
         .PRDATA                 (PRDATA) ,
         .PREADY                 (PREADY) ,
         .PSLVERR                (PSLVERR)
@@ -378,7 +378,6 @@ AHBlite_APB AHB2apb(
 
 
 wire [3:0]DECODE4BIT;
-wire PSEL;
 
 wire PSEL0;
 wire PREADY0;
@@ -397,7 +396,7 @@ wire PREADY3;
 wire [31:0]  PRDATA3;
 wire PSLVERR3;
 
-apb_mux apb_slave_mux(
+apb_slave_mux apb_mux (
         .PSEL0          (PSEL0),
         .PSEL1          (PSEL1),
         .PSEL2          (PSEL2),
@@ -414,15 +413,15 @@ apb_mux apb_slave_mux(
         .PSLVERR1       (PSLVERR1),
         .PSLVERR2       (PSLVERR2),
         .PSLVERR3       (PSLVERR3),
-        .PREADY0        (PREADY0),
-        .PREADY1        (PREADY1),
-        .PREADY2        (PREADY2),
-        .PREADY3        (PREADY3)
-)
+        .PREADY         (PREADY),
+        .PRDATA         (PRDATA),
+        .PSLVERR        (PSLVERR)
+);
 wire [11:0] ADC_DATA;
-apb_adc apb2adc(
-        .PCLK           (HCLK),
-        .PRESETn        (HRESETn),
+assign ADC_DATA = data_adc;
+apb2adc apb_adc (
+        .PCLK           (clk),
+        .PRESETn        (cpuresetn),
         .PENABLE        (PENABLE),
         .PREADY         (PREADY0),
         .PSEL           (PSEL0),
@@ -433,35 +432,35 @@ apb_adc apb2adc(
 );
 
 
-apb_pwm apb2pwm(
-        .PCLK           (HCLK),
-        .PRESETn        (HRESETn),
-        .PENABLE        (PENABLE),
-        .PREADY         (PREADY1),
-        .PSEL           (PSEL1),
-        .PWRITE         (PWRITE),
-        .PRDATA         (PRDATA1)
-)
-//--------------
+//apb_pwm apb2pwm(
+//        .PCLK           (HCLK),
+//        .PRESETn        (HRESETn),
+//        .PENABLE        (PENABLE),
+//        .PREADY         (PREADY1),
+//        .PSEL           (PSEL1),
+//        .PWRITE         (PWRITE),
+//        .PRDATA         (PRDATA1)
+//);
+////--------------
 //adc
 //--------------
-uadc adc(
-        .clk            (),
-        .rstn           (),
-        .anadata        (realdata),
-        .start          (),
-        .OE             (),
-        .EOC            (),
-        .adc_data       (ADC_DATA)
-)
+//uadc adc(
+//        .clk            (),
+//        .rstn           (),
+//        .anadata        (realdata),
+//        .start          (),
+//        .OE             (),
+//        .EOC            (),
+//        .adc_data       (ADC_DATA)
+//);
 //------------
 //PWM
 //------------
-upwm pwm(
-        .clk            (),
-        .rstn           (),
-        .enable         ()
-)
+//upwm pwm(
+//        .clk            (),
+//        .rstn           (),
+//        .enable         ()
+//);
 //------------------------------------------------------------------------------
 // RAM
 //------------------------------------------------------------------------------

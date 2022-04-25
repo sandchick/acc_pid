@@ -1,4 +1,4 @@
-module AHB2apb(
+module AHB2apb#(
   // Parameter to define address width
   // 16 = 2^16 = 64KB APB address space
   parameter     ADDRWIDTH = 14,

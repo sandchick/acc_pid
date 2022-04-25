@@ -1,4 +1,4 @@
-module apbtoadc(
+module apb2adc(
   input  wire         PCLK,        // APB clock
   input  wire         PRESETn,     // APB reset
   input  wire         PENABLE,     // APB enable
@@ -39,4 +39,5 @@ end
 
 assign wr_en = ~full | ready;
 assign PREADY = 1'b1;
+assign PRDATA = dout;
 endmodule
