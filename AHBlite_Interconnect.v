@@ -143,7 +143,8 @@ AHBlite_Decoder Decoder(
     .HADDR      (HADDR),
     .P0_HSEL    (HSEL_P0),
     .P1_HSEL    (HSEL_P1),
-    .P2_HSEL    (HSEL_P2)
+    .P2_HSEL    (HSEL_P2),
+    .P3_HSEL    (HSEL_P3)
 );
 
 // Slave MUX-------------------------------------

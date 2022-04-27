@@ -28,13 +28,16 @@ __Vectors       DCD     0x20000000                ; Top of Stack
 
 Reset_Handler   PROC
                 GLOBAL  Reset_Handler
-                ENTRY
-                LDR R2, =0x40000000               ;R2 ADC addr
-				LDR R3, [R2]
-; Finish function code 
+				ENTRY
+                B	start
+				ENDP
 
-;;;;;;;;;;;;;;;;;;;;;;
 
-                ENDP
-                    
-                END
+;Inset a loop algorithm there;
+            AREA template, CODE, READONLY
+start       PROC
+            LDR R2, =0x40000000               ;R2 ADC addr
+			LDR R3, [R2]
+            B start
+            ENDP
+            END
