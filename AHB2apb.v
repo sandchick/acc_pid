@@ -1,7 +1,7 @@
 module AHB2apb#(
   // Parameter to define address width
   // 16 = 2^16 = 64KB APB address space
-  parameter     ADDRWIDTH = 14,
+  parameter     ADDRWIDTH = 32,
   parameter     REGISTER_RDATA = 1,
   parameter     REGISTER_WDATA = 0)
  (

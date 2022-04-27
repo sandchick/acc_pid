@@ -1,5 +1,5 @@
 
-module CortexM0_SoC #(parameter DATA_WIDTH = 8)(
+module CortexM0_SoC #(parameter DATA_WIDTH = 12)(
         input   wire         clk,
         input   wire         RSTn,
         inout   wire         SWDIO,  
@@ -335,7 +335,7 @@ AHBlite_Sram RAMDATA_Interface(
 //APB bridge
 //-------------------------------------------
 
-   wire          [13:0] PADDR;     // APB Address
+   wire          [31:0] PADDR;     // APB Address
    wire                 PENABLE;   // APB Enable
    wire                 PWRITE;    // APB Write
    wire           [3:0] PSTRB;     // APB Byte Strobe
@@ -415,7 +415,8 @@ apb_slave_mux apb_mux (
         .PSLVERR3       (PSLVERR3),
         .PREADY         (PREADY),
         .PRDATA         (PRDATA),
-        .PSLVERR        (PSLVERR)
+        .PSLVERR        (PSLVERR),
+        .DECODE4BIT     (PADDR[15:12])
 );
 wire [11:0] ADC_DATA;
 assign ADC_DATA = data_adc;

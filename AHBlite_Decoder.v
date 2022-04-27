@@ -9,7 +9,7 @@ module AHBlite_Decoder
     /************************/
 
     /*APB enable parameter*/
-    parameter Port2_en = 1
+    parameter Port2_en = 0
     /************************/
 
 )(
