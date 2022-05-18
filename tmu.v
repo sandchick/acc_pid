@@ -13,16 +13,47 @@ module tmu(
   output wire enable_cordic
   ); 
 
-wire [11:0] data_pid;
-wire [11:0] data_cordic;
+reg [11:0] data_pid;
+reg [11:0] data_cordic;
+reg write_enablecordic_reg;
+reg write_enablepid_reg;
 
-assign data_pid = (write_enablepid) ? data_pid_in : {12{1'b0}};
-assign data_cordic = (write_enablecordic) ? data_cordic_in : {12{1'b0}};
+always @(posedge clk or negedge rstn ) begin
+  if (~rstn)
+    write_enablecordic_reg <= 1'b0;
+  else 
+    write_enablecordic_reg <= write_enablecordic; 
+end
+
+always @(posedge clk or negedge rstn ) begin
+  if (~rstn)
+    write_enablepid_reg <= 1'b0;
+  else 
+    write_enablepid_reg <= write_enablepid; 
+end
+
+always @(posedge clk or negedge rstn ) begin
+  if (~rstn)
+    data_pid <= {12{1'b0}};
+  else if(write_enablepid_reg)
+    data_pid <= data_pid_in; 
+end
+
+always @(posedge clk or negedge rstn ) begin
+  if (~rstn)
+    data_cordic <= {12{1'b0}};
+  else if(write_enablecordic_reg)
+    data_cordic <= data_cordic_in; 
+end
+
 
 cordic u_cordic(
-     .clk (clk)
-    ,.atanin (data_cordic)
-    ,.atanout (data_cordic_out)
+     .i_clk (clk)
+    ,.i_reset (rstn)
+    ,.i_ce  (1'b1)
+    ,.i_xval  (data_cordic)
+    ,.i_yval  (12'd0)
+    ,.o_mag   (data_cordic_out)
 );
  
 //pid u_pid(

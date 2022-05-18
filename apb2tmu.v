@@ -4,6 +4,7 @@ module apb2tmu(
   input  wire         PENABLE,     // APB enable
   input  wire         PSEL,        // APB periph select
   input  wire         PWRITE,      // APB write
+  input  wire [31:0]  PADDR,       // APB ADDR
   input  wire [31:0]  PWDATA,      // APB write data
   output wire [31:0]  PRDATA,      // APB read data
   output wire PREADY,
@@ -11,15 +12,15 @@ module apb2tmu(
   input wire [11:0] data_cordic_in,
   input wire [11:0] data_pid_in,
   output reg [11:0] data_cordic_out,
-  output reg [11:0] data_pid_in,
+  output reg [11:0] data_pid_out,
   output wire write_enablecordic,
   output wire write_enablepid
 
 );
-reg [31:0] read_mux_byte;
+reg [31:0] read_mux_word;
 wire read_enable;
 wire write_enable;
-
+assign PREADY = 1'b1; //always ready
 // Read and write control signals
 assign  read_enable  = PSEL & (~PWRITE); // assert for whole APB read transfer
 assign  write_enable = PSEL & (~PENABLE) & PWRITE; // assert for 1st cycle of write transfer

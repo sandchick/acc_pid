@@ -433,7 +433,33 @@ apb2adc apb_adc (
         .ADC_DATA       (ADC_DATA)
         
 );
+wire [11:0] cordic_data_acnt;//计算后的cordicdata
+wire [11:0] cordic_data_bcnt;//计算前的cordicdata
 
+apb2tmu apb_tmu (      
+        .PCLK           (clk),
+        .PRESETn        (cpuresetn),
+        .PENABLE        (PENABLE),
+        .PREADY         (PREADY1),
+        .PSEL           (PSEL1),
+        .PADDR          (PADDR),
+        .PWRITE         (PWRITE),
+        .PRDATA         (PRDATA1),
+        .PWDATA         (PWDATA),
+        .data_cordic_in (cordic_data_acnt),
+        .data_cordic_out (cordic_data_bcnt),
+        .write_enablecordic (write_enablecordic)
+);
+
+
+
+tmu utmu(
+        .clk (clk)
+        ,.rstn (cpuresetn)
+        ,.data_cordic_in (cordic_data_bcnt)
+        ,.write_enablecordic (write_enablecordic)
+        ,.data_cordic_out (cordic_data_acnt)
+);
 
 //apb_pwm apb2pwm(
 //        .PCLK           (HCLK),
