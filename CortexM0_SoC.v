@@ -347,7 +347,9 @@ AHBlite_Sram RAMDATA_Interface(
    wire          [31:0] PRDATA;    // Read data for each APB slave
    wire                 PREADY;    // Ready for each APB slave
    wire                 PSLVERR;  // Error state for each APB slave
-
+   
+   assign PSLVERR = 1'b0; //never error
+ 
  AHB2apb AHB_apb(
         /* Connect to Interconnect Port 2 */
         .HCLK                   (clk),
@@ -430,6 +432,7 @@ apb2adc apb_adc (
         .PSEL           (PSEL0),
         .PWRITE         (PWRITE),
         .PRDATA         (PRDATA0),
+        .PSLVERR        (PSLVERR0),
         .ADC_DATA       (ADC_DATA)
         
 );

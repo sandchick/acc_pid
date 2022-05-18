@@ -6,6 +6,7 @@ module apb2adc(
   input  wire         PWRITE,      // APB write
   output  wire [31:0]  PRDATA,      // APB write data
   output wire PREADY,
+  output wire PSLVERR,
   input wire [11:0]  ADC_DATA
 );
 reg full;
@@ -13,7 +14,7 @@ wire wr_en;
 wire ready;
 
 assign ready = (~PWRITE) & PSEL & PENABLE;
-
+assign PSLVERR = 1'b0; //never error
 reg [11:0] dout;
 
 always @(posedge PCLK or negedge PRESETn) begin
