@@ -7,6 +7,7 @@ module apb2tmu(
   input  wire [31:0]  PADDR,       // APB ADDR
   input  wire [31:0]  PWDATA,      // APB write data
   output wire [31:0]  PRDATA,      // APB read data
+  output wire PSLVERR,
   output wire PREADY,
   
   input wire [11:0] data_cordic_in,
@@ -21,6 +22,7 @@ reg [31:0] read_mux_word;
 wire read_enable;
 wire write_enable;
 assign PREADY = 1'b1; //always ready
+assign PSLVERR = 1'b0; //never error
 // Read and write control signals
 assign  read_enable  = PSEL & (~PWRITE); // assert for whole APB read transfer
 assign  write_enable = PSEL & (~PENABLE) & PWRITE; // assert for 1st cycle of write transfer

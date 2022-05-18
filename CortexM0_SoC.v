@@ -448,6 +448,7 @@ apb2tmu apb_tmu (
         .PADDR          (PADDR),
         .PWRITE         (PWRITE),
         .PRDATA         (PRDATA1),
+        .PSLVERR        (PSLVERR1),
         .PWDATA         (PWDATA),
         .data_cordic_in (cordic_data_acnt),
         .data_cordic_out (cordic_data_bcnt),
