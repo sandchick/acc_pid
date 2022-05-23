@@ -7,10 +7,13 @@ module tmu(
   input wire [11:0] data_cordic_in,
   input wire write_enablecordic,
   input wire write_enablepid,
-  output wire [11:0] data_pid_out,
+  output wire [16:0] data_pid_out,
   output wire [11:0] data_cordic_out,
   output wire enable_pid,
-  output wire enable_cordic
+  output wire enable_cordic,
+  input wire [11:0] para,
+  input wire [11:0] target,
+  input wire [11:0] y
   ); 
 
 reg [11:0] data_pid;
@@ -56,9 +59,16 @@ cordic u_cordic(
     ,.o_mag   (data_cordic_out)
 );
  
-//pid u_pid(
-//
-//);
+pid u_pid(
+  .clk (clk)
+  ,.rst_n (rstn)
+  ,.target (target)
+  ,.y (y)
+  ,.kp (para[3:0])
+  ,.ki (para[7:4])
+  ,.kd (para[11:8])
+  ,.uk0(data_pid_out)
+);
 
 
 endmodule
