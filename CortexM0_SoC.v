@@ -455,7 +455,19 @@ apb2tmu apb_tmu (
         .write_enablecordic (write_enablecordic)
 );
 
-
+wire pwmenable;
+apb_pwm apb2pwm(
+        .PCLK           (HCLK),
+        .PRESETn        (HRESETn),
+        .PENABLE        (PENABLE),
+        .PREADY         (PREADY2),
+        .PSEL           (PSEL2),
+        .PWRITE         (PWRITE),
+        .PRDATA         (PRDATA2),
+        .PSLVERR        (PSLVERR2),
+        .PWDATA         (PWDATA),
+        .pwmenable      (pwmenable)
+);
 
 tmu utmu(
         .clk (clk)
@@ -465,16 +477,7 @@ tmu utmu(
         ,.data_cordic_out (cordic_data_acnt)
 );
 
-//apb_pwm apb2pwm(
-//        .PCLK           (HCLK),
-//        .PRESETn        (HRESETn),
-//        .PENABLE        (PENABLE),
-//        .PREADY         (PREADY1),
-//        .PSEL           (PSEL1),
-//        .PWRITE         (PWRITE),
-//        .PRDATA         (PRDATA1)
-//);
-////--------------
+//--------------
 //adc
 //--------------
 //uadc adc(
