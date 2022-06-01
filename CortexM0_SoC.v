@@ -423,6 +423,8 @@ apb_slave_mux apb_mux (
         .DECODE4BIT     (PADDR[15:12])
 );
 wire [11:0] ADC_DATA;
+wire sample_enable;
+wire adc2tmu_en;
 assign ADC_DATA = data_adc;
 apb2adc apb_adc (
         .PCLK           (clk),
@@ -433,6 +435,8 @@ apb2adc apb_adc (
         .PWRITE         (PWRITE),
         .PRDATA         (PRDATA0),
         .PSLVERR        (PSLVERR0),
+        .sample_enable  (sample_enable),
+        .adc2tmu_en     (adc2tmu_en),
         .ADC_DATA       (ADC_DATA)
         
 );
@@ -456,8 +460,8 @@ apb2tmu apb_tmu (
 );
 
 wire pwmenable;
-apb_pwm apb2pwm(
-        .PCLK           (HCLK),
+apb2pwm apb_pwm(
+        .PCLK           (clk),
         .PRESETn        (HRESETn),
         .PENABLE        (PENABLE),
         .PREADY         (PREADY2),
@@ -468,35 +472,50 @@ apb_pwm apb2pwm(
         .PWDATA         (PWDATA),
         .pwmenable      (pwmenable)
 );
+wire [11:0] adc_data1;
+adc2tmu adc_tmu(
+        .clk    (clk)
+        ,.rstn  (HRESETn)
+        ,.adc2tmu_en (adc2tmu_en)
+        ,.adc_data_in (ADC_DATA)
+        ,.adc_data_out (adc_data1)
+);
 
 tmu utmu(
         .clk (clk)
         ,.rstn (cpuresetn)
+        ,.adc_data1 (adc_data1)
         ,.data_cordic_in (cordic_data_bcnt)
         ,.write_enablecordic (write_enablecordic)
         ,.data_cordic_out (cordic_data_acnt)
 );
-
+//------------
+//adc sample
+//------------
+wire start;
+wire OE;
+wire EOC;
+adc_sample uadc_sample(
+        .clk            (clk),
+        .rstn           (HRESETn),
+        .sample_enable  (sample_enable),
+        .EOC            (EOC)
+        ,.start         (start)
+        ,.OE            (OE)
+);
 //--------------
 //adc
 //--------------
-//uadc adc(
-//        .clk            (),
-//        .rstn           (),
-//        .anadata        (realdata),
-//        .start          (),
-//        .OE             (),
-//        .EOC            (),
-//        .adc_data       (ADC_DATA)
-//);
-//------------
-//PWM
-//------------
-//upwm pwm(
-//        .clk            (),
-//        .rstn           (),
-//        .enable         ()
-//);
+adc uadc(
+        .clk            (clk),
+        .rstn           (HRESETn),
+      //  .anadata        (realdata),
+        .start          (start),
+        .OE             (OE),
+        .EOC            (EOC),
+        //.adc_data       (ADC_DATA)
+);
+
 //------------------------------------------------------------------------------
 // RAM
 //------------------------------------------------------------------------------

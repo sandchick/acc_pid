@@ -1,7 +1,7 @@
 module tmu(
   input  wire        clk,    // PCLK for timer operation
   input  wire        rstn, // Reset
-  //input wire [11:0] adc_data1,
+  input wire [11:0] adc_data1,
   //input wire [11:0] adc_data2,
   input wire [11:0] data_pid_in,
   input wire [11:0] data_cordic_in,

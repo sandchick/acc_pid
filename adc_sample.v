@@ -1,7 +1,7 @@
-module pwm (
+module adc_sample(
    input clk,
    input rstn,
-   input pwmenable,
+   input sample_enable,
    input EOC,
    output reg start,
    output reg OE
@@ -13,10 +13,16 @@ parameter   idle = 3'b000,
             start_pullup = 3'b001, 
             convert_on = 3'b011,
             EOC_pullup = 3'b010,
-            OE_pullup = 3'b110,
+            OE_pullup = 3'b110;
 
-always @(posedge clk or negedge rstn) begin
-   if (rstn == 1'b0 or pwmenable == 1'b1) begin
+freq_div #(.F_DIV(6250)) ufreqdiv(
+          .clk     (clk),
+          .clk_out (clk_sample)
+          );
+
+
+always @(posedge clk_sample or negedge rstn) begin
+   if (rstn == 1'b0 or sample_enable == 1'b1) begin
       current_state <= idle; 
    end
    else begin
@@ -57,21 +63,19 @@ always @(*) begin
    end
 end
 
-always @(posedge clk or negedge rstn) begin
-    if(rstn == 1'b0 or pwmenable == 1'b1)begin
+always @(posedge clk_sample or negedge rstn) begin
+    if(rstn == 1'b0 or sample_enable == 1'b1)begin
       start <= 1'b0;
       OE <= 1'b0;
     end
     else begin
       case(next_state)
         idle:begin
-          start <= 1'b0;
-          OE <= 1'b0;
-        end 
+            start <= 1'b0;
+            OE <= 1'b0;end 
         start_pullup:begin
-          start <= 1'b1;
-          OE <= 1'b0;
-        end 
+            start <= 1'b1;
+            OE <= 1'b0;end 
         convert_on:begin
             start <= 1'b0;
             OE <= 1'b0;end
@@ -81,7 +85,7 @@ always @(posedge clk or negedge rstn) begin
         OE_pull:begin
             start <= 1'b0;
             OE <= 1'b1;end
-        default:
+        default:begin
             start <= 1'b0;
             OE <= 1'b0;end
       endcase

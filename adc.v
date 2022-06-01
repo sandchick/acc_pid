@@ -1,5 +1,4 @@
-module adc #(parameter convert_time = 10
-            parameter  = ;)(
+module adc #(parameter convert_time = 10)(
     input clk,             //时钟信号
     input rstn,
     input real anadata,
