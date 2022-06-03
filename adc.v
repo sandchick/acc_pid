@@ -7,7 +7,9 @@ module adc #(parameter convert_time = 10)(
     output reg EOC,               //转换完成信号
     output reg [11:0] adc_data,
 );
+wire [11:0] data_in;
 
+assign data_in = anadata << 52;
 reg [2:0] current_state, next_state;
 parameter   idle = 3'b000,
             start_pullup = 3'b001, 

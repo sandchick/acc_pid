@@ -10,20 +10,24 @@ reg [11:0] adc_data_reg1;
 reg [11:0] adc_data_reg2;
 
 always @(posedge clk or negedge rstn) begin
-    if (!rstn or !adc2tmu_en)begin
+    if (!rstn )begin
       adc_data_reg1 <= 1'b0;
     end
     else begin
+        if(adc2tmu_en)begin
         adc_data_reg1 <= adc_data_in;
+        end
     end
 end
 
 always @(posedge clk or negedge rstn) begin
-    if (!rstn or !adc2tmu_en)begin
+    if (!rstn )begin
       adc_data_reg2 <= 1'b0;
     end
     else begin
+        if(adc2tmu_en)begin
         adc_data_reg2 <= adc_data_reg1;
+        end
     end
 end
 endmodule
