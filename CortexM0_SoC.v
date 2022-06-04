@@ -4,7 +4,7 @@ module CortexM0_SoC #(parameter DATA_WIDTH = 12)(
         input   wire         RSTn,
         inout   wire         SWDIO,  
         input   wire         SWCLK,
-        input   wire        [DATA_WIDTH - 1:0] data_adc
+        input   wire [31:0]      real_data
 );
 
 //------------------------------------------------------------------------------
@@ -425,13 +425,14 @@ apb_slave_mux apb_mux (
 wire [11:0] ADC_DATA;
 wire sample_enable;
 wire adc2tmu_en;
-assign ADC_DATA = data_adc;
+//assign ADC_DATA = data_adc;
 apb2adc apb_adc (
         .PCLK           (clk),
         .PRESETn        (cpuresetn),
         .PENABLE        (PENABLE),
         .PREADY         (PREADY0),
         .PSEL           (PSEL0),
+        .PADDR          (PADDR),
         .PWRITE         (PWRITE),
         .PRDATA         (PRDATA0),
         .PSLVERR        (PSLVERR0),
@@ -467,7 +468,7 @@ apb2pwm apb_pwm(
         .PREADY         (PREADY2),
         .PSEL           (PSEL2),
         .PWRITE         (PWRITE),
-        .PRDATA         (PRDATA2),
+      //  .PRDATA         (PRDATA2),
         .PSLVERR        (PSLVERR2),
         .PWDATA         (PWDATA),
         .pwmenable      (pwmenable)
@@ -509,11 +510,11 @@ adc_sample uadc_sample(
 adc uadc(
         .clk            (clk),
         .rstn           (HRESETn),
-      //  .anadata        (realdata),
+        .anadata        (realdata),
         .start          (start),
         .OE             (OE),
         .EOC            (EOC),
-        //.adc_data       (ADC_DATA)
+        .adc_data       (ADC_DATA)
 );
 
 //------------------------------------------------------------------------------

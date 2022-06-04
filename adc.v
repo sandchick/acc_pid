@@ -1,11 +1,11 @@
 module adc #(parameter convert_time = 10)(
     input clk,             //时钟信号
     input rstn,
-    input real anadata,
+    input wire [31:0] anadata,
     input start,              //开始转换信号
     input OE,                 //输出完成使能
     output reg EOC,               //转换完成信号
-    output reg [11:0] adc_data,
+    output reg [11:0] adc_data
 );
 wire [11:0] data_in;
 
@@ -15,7 +15,7 @@ parameter   idle = 3'b000,
             start_pullup = 3'b001, 
             convert_on = 3'b011,
             EOC_pullup = 3'b010,
-            OE_pullup = 3'b110,
+            OE_pullup = 3'b110;
 always @(posedge clk or negedge rstn) begin
    if (rstn == 1'b0) begin
       current_state <= idle; 
@@ -62,27 +62,30 @@ always @(*) begin
    default:begin
      next_state = idle;
    end
+   endcase
 end
 
 reg flag;
 
 always @(posedge clk or negedge rstn) begin
     if(rstn == 1'b0)begin
-      adc_data <= 12'b0
+      adc_data <= 12'b0;
     end
     else begin
       case(next_state)
-        idle: EOC <= 1'b1;
-        start_pullup: EOC <= 1'b1;
+        idle:begin EOC <= 1'b1;end 
+        start_pullup:begin EOC <= 1'b1;end
         convert_on:begin
             EOC <= 1'b0;
             flag <= 1'b1;end
         EOC_pullup:begin
             EOC <= 1'b1;
             flag <= 1'b0;end
-        OE_pull:adc_data <= data_in;
-        default:EOC <= 1'b1;
+        OE_pullup:begin adc_data <= data_in;end
+        default:begin EOC <= 1'b1;end
+      endcase
     end
+end
 
 always @(posedge clk or negedge rstn) begin
     if(rstn == 1'b0)begin
@@ -97,7 +100,7 @@ always @(posedge clk or negedge rstn) begin
     end
 end
 
-end
+
 
 
 endmodule

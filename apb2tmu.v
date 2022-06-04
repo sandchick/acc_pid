@@ -16,9 +16,9 @@ module apb2tmu(
   output reg [11:0] data_pid_out,
   output wire write_enablecordic,
   output wire write_enablepid,
-  output wire [11:0] para,
-  output wire [11:0] target,
-  output wire [11:0] y
+  output reg [11:0] para,
+  output reg [11:0] target,
+  output reg [11:0] y
 
 );
 reg [31:0] read_mux_word;
@@ -31,9 +31,9 @@ assign  read_enable  = PSEL & (~PWRITE); // assert for whole APB read transfer
 assign  write_enable = PSEL & (~PENABLE) & PWRITE; // assert for 1st cycle of write transfer
 assign  write_enablecordic = write_enable & (PADDR[11:2] == 10'h000);
 assign  write_enablepid = write_enable & (PADDR[11:2] == 10'h001);
-assign  write_enabletarget = wtite_enable & (PADDR[11:2] == 10'h002);
-assign  write_enabley = wtite_enable & (PADDR[11:2] == 10'h003);
-assign  write_enablepara = wtite_enable & (PADDR[11:2] == 10'h004);
+assign  write_enabletarget = write_enable & (PADDR[11:2] == 10'h002);
+assign  write_enabley = write_enable & (PADDR[11:2] == 10'h003);
+assign  write_enablepara = write_enable & (PADDR[11:2] == 10'h004);
 always @(*) begin
    case(PADDR[3:2])
     2'b00: read_mux_word = data_cordic_in;

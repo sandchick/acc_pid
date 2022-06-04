@@ -22,7 +22,7 @@ freq_div #(.F_DIV(6250)) ufreqdiv(
 
 
 always @(posedge clk_sample or negedge rstn) begin
-   if (rstn == 1'b0 or sample_enable == 1'b1) begin
+   if (rstn == 1'b0 | sample_enable == 1'b1) begin
       current_state <= idle; 
    end
    else begin
@@ -61,13 +61,13 @@ always @(*) begin
    default:begin
      next_state = idle;
    end
+   endcase
 end
 
 always @(posedge clk_sample or negedge rstn) begin
-    if(rstn == 1'b0 or sample_enable == 1'b1)begin
+    if(rstn == 1'b0 | sample_enable == 1'b1)begin
       start <= 1'b0;
-      OE <= 1'b0;
-    end
+      OE <= 1'b0;end
     else begin
       case(next_state)
         idle:begin
@@ -82,7 +82,7 @@ always @(posedge clk_sample or negedge rstn) begin
         EOC_pullup:begin
             start <= 1'b0;
             OE <= 1'b0;end
-        OE_pull:begin
+        OE_pullup:begin
             start <= 1'b0;
             OE <= 1'b1;end
         default:begin
@@ -90,5 +90,5 @@ always @(posedge clk_sample or negedge rstn) begin
             OE <= 1'b0;end
       endcase
     end
-
+end 
 endmodule
