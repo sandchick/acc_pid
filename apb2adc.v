@@ -22,8 +22,8 @@ wire write_enable_adc2tmu;
 
 assign read_enable = (~PWRITE) & PSEL;
 assign write_enable = PSEL & (~PENABLE) & PWRITE; 
-assign write_enable_sample = write_enable & (PADDR[11:0] == 12'h000);
-assign write_enable_adc2tmu = write_enable & (PADDR[11:0] == 12'h001);
+assign write_enable_sample = write_enable & (PADDR[11:2] == 12'h000);
+assign write_enable_adc2tmu = write_enable & (PADDR[11:2] == 12'h001);
 assign PSLVERR = 1'b0; //never error
 reg [11:0] dout;
 

@@ -49,12 +49,15 @@ always @(posedge clk or negedge rstn ) begin
     data_cordic <= data_cordic_in; 
 end
 
+wire [11:0] data_cordic_mux;
+
+assign data_cordic_mux = clk ? adc_data1:data_cordic;
 
 cordic u_cordic(
      .i_clk (clk)
     ,.i_reset (rstn)
     ,.i_ce  (1'b1)
-    ,.i_xval  (data_cordic)
+    ,.i_xval  (data_cordic_mux)
     ,.i_yval  (12'd0)
     ,.o_mag   (data_cordic_out)
 );
