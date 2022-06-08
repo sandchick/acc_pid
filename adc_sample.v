@@ -15,14 +15,14 @@ parameter   idle = 3'b000,
             EOC_pullup = 3'b010,
             OE_pullup = 3'b110;
 
-freq_div #(.F_DIV(6250)) ufreqdiv(
+freq_div #(.F_DIV(10)) ufreqdiv(
           .clk     (clk),
           .clk_out (clk_sample)
           );
 
 
 always @(posedge clk_sample or negedge rstn) begin
-   if (rstn == 1'b0 | sample_enable == 1'b1) begin
+   if (rstn == 1'b0 | sample_enable == 1'b0) begin
       current_state <= idle; 
    end
    else begin
@@ -48,10 +48,10 @@ always @(*) begin
    end
 
    EOC_pullup:begin
-    if(EOC == 1'b0)
+ //   if(EOC == 1'b0)
         next_state <= OE_pullup;
-    else 
-        next_state <= EOC_pullup;
+    //else 
+    //    next_state <= EOC_pullup;
    end
 
    OE_pullup:begin
@@ -65,7 +65,7 @@ always @(*) begin
 end
 
 always @(posedge clk_sample or negedge rstn) begin
-    if(rstn == 1'b0 | sample_enable == 1'b1)begin
+    if(rstn == 1'b0 | sample_enable == 1'b0)begin
       start <= 1'b0;
       OE <= 1'b0;end
     else begin

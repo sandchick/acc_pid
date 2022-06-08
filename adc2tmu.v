@@ -3,7 +3,7 @@ module adc2tmu(
     input wire rstn,
     input wire adc2tmu_en,
     input wire [11:0] adc_data_in,
-    output reg [11:0] adc_data_out
+    output wire [11:0] adc_data_out
 );
 
 reg [11:0] adc_data_reg1;
@@ -30,4 +30,7 @@ always @(posedge clk or negedge rstn) begin
         end
     end
 end
+
+assign adc_data_out = adc_data_reg2;
+
 endmodule

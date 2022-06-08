@@ -30,6 +30,13 @@ end
 
 always @(posedge clk or negedge rstn ) begin
   if (~rstn)
+    data_cordic <= {12{1'b0}};
+  else if(write_enablecordic_reg)
+    data_cordic <= data_cordic_in; 
+end
+
+always @(posedge clk or negedge rstn ) begin
+  if (~rstn)
     write_enablepid_reg <= 1'b0;
   else 
     write_enablepid_reg <= write_enablepid; 
@@ -42,17 +49,19 @@ always @(posedge clk or negedge rstn ) begin
     data_pid <= data_pid_in; 
 end
 
-always @(posedge clk or negedge rstn ) begin
-  if (~rstn)
-    data_cordic <= {12{1'b0}};
-  else if(write_enablecordic_reg)
-    data_cordic <= data_cordic_in; 
+
+
+reg [11:0] data_cordic_mux;
+always @(posedge clk or negedge rstn) begin
+ if (~rstn) 
+  data_cordic_mux <= {12{1'b0}};
+  else if (write_enablecordic_reg)
+  data_cordic_mux <= data_cordic;
+  else 
+  data_cordic_mux <= adc_data1;
 end
-
-wire [11:0] data_cordic_mux;
-
-assign data_cordic_mux = clk ? adc_data1:data_cordic;
-
+//assign data_cordic_mux = write_enablecordic_reg ? data_cordic : adc_data1;
+//assign data_cordic_mux = adc_data1;
 cordic u_cordic(
      .i_clk (clk)
     ,.i_reset (rstn)

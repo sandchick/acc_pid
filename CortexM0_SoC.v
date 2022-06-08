@@ -435,6 +435,7 @@ apb2adc apb_adc (
         .PADDR          (PADDR),
         .PWRITE         (PWRITE),
         .PRDATA         (PRDATA0),
+        .PWDATA         (PWDATA),
         .PSLVERR        (PSLVERR0),
         .sample_enable  (sample_enable),
         .adc2tmu_en     (adc2tmu_en),
@@ -463,7 +464,7 @@ apb2tmu apb_tmu (
 wire pwmenable;
 apb2pwm apb_pwm(
         .PCLK           (clk),
-        .PRESETn        (HRESETn),
+        .PRESETn        (cpuresetn),
         .PENABLE        (PENABLE),
         .PREADY         (PREADY2),
         .PSEL           (PSEL2),
@@ -476,7 +477,7 @@ apb2pwm apb_pwm(
 wire [11:0] adc_data1;
 adc2tmu adc_tmu(
         .clk    (clk)
-        ,.rstn  (HRESETn)
+        ,.rstn  (cpuresetn)
         ,.adc2tmu_en (adc2tmu_en)
         ,.adc_data_in (ADC_DATA)
         ,.adc_data_out (adc_data1)
@@ -498,7 +499,7 @@ wire OE;
 wire EOC;
 adc_sample uadc_sample(
         .clk            (clk),
-        .rstn           (HRESETn),
+        .rstn           (cpuresetn),
         .sample_enable  (sample_enable),
         .EOC            (EOC)
         ,.start         (start)
@@ -509,8 +510,8 @@ adc_sample uadc_sample(
 //--------------
 adc uadc(
         .clk            (clk),
-        .rstn           (HRESETn),
-        .anadata        (realdata),
+        .rstn           (cpuresetn),
+        .anadata        (real_data),
         .start          (start),
         .OE             (OE),
         .EOC            (EOC),
