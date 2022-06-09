@@ -2,7 +2,7 @@ module tmu(
   input  wire        clk,    // PCLK for timer operation
   input  wire        rstn, // Reset
   input wire [11:0] adc_data1,
-  //input wire [11:0] adc_data2,
+  input wire [11:0] adc_data2,
   input wire [11:0] data_pid_in,
   input wire [11:0] data_cordic_in,
   input wire write_enablecordic,
@@ -12,8 +12,7 @@ module tmu(
   output wire enable_pid,
   output wire enable_cordic,
   input wire [11:0] para,
-  input wire [11:0] target,
-  input wire [11:0] y
+  input wire [11:0] target
   ); 
 
 reg [11:0] data_pid;
@@ -70,12 +69,21 @@ cordic u_cordic(
     ,.i_yval  (12'd0)
     ,.o_mag   (data_cordic_out)
 );
- 
+reg [11:0] data_pid_mux; 
+always @(posedge clk or negedge rstn) begin
+ if (~rstn) 
+  data_pid_mux <= {12{1'b0}};
+  else if (write_enablecordic_reg)
+  data_pid_mux <= data_pid;
+  else 
+  data_cordic_mux <= adc_data2;
+end
+
 pid u_pid(
   .clk (clk)
   ,.rst_n (rstn)
   ,.target (target)
-  ,.y (y)
+  ,.y (data_pid_mux)
   ,.kp (para[3:0])
   ,.ki (para[7:4])
   ,.kd (para[11:8])

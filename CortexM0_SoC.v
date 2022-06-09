@@ -4,7 +4,8 @@ module CortexM0_SoC #(parameter DATA_WIDTH = 12)(
         input   wire         RSTn,
         inout   wire         SWDIO,  
         input   wire         SWCLK,
-        input   wire [31:0]      real_data
+        input   wire [31:0]      real_data1,
+        input   wire [31:0]  real_data2
 );
 
 //------------------------------------------------------------------------------
@@ -422,11 +423,14 @@ apb_slave_mux apb_mux (
         .PSLVERR        (PSLVERR),
         .DECODE4BIT     (PADDR[15:12])
 );
-wire [11:0] ADC_DATA;
-wire sample_enable;
-wire adc2tmu_en;
+wire [11:0] ADC_DATA1;
+wire [11:0] ADC_DATA2;
+wire sample_enable1;
+wire sample_enable2;
+wire adc2tmu1_en;
+wire adc2tmu2_en;
 //assign ADC_DATA = data_adc;
-apb2adc apb_adc (
+apb2adc apb_adc1 (
         .PCLK           (clk),
         .PRESETn        (cpuresetn),
         .PENABLE        (PENABLE),
@@ -437,9 +441,25 @@ apb2adc apb_adc (
         .PRDATA         (PRDATA0),
         .PWDATA         (PWDATA),
         .PSLVERR        (PSLVERR0),
-        .sample_enable  (sample_enable),
-        .adc2tmu_en     (adc2tmu_en),
-        .ADC_DATA       (ADC_DATA)
+        .sample_enable  (sample_enable1),
+        .adc2tmu_en     (adc2tmu1_en),
+        .ADC_DATA       (ADC_DATA1)
+        
+);
+apb2adc apb_adc2 (
+        .PCLK           (clk),
+        .PRESETn        (cpuresetn),
+        .PENABLE        (PENABLE),
+        .PREADY         (PREADY3),
+        .PSEL           (PSEL3),
+        .PADDR          (PADDR),
+        .PWRITE         (PWRITE),
+        .PRDATA         (PRDATA3),
+        .PWDATA         (PWDATA),
+        .PSLVERR        (PSLVERR3),
+        .sample_enable  (sample_enable2),
+        .adc2tmu_en     (adc2tmu2_en),
+        .ADC_DATA       (ADC_DATA2)
         
 );
 wire [11:0] cordic_data_acnt;//计算后的cordicdata
@@ -458,7 +478,47 @@ apb2tmu apb_tmu (
         .PWDATA         (PWDATA),
         .data_cordic_in (cordic_data_acnt),
         .data_cordic_out (cordic_data_bcnt),
-        .write_enablecordic (write_enablecordic)
+        .write_enablecordic (write_enablecordic),
+        .data_pid_in (pid_data_acnt),
+        .data_pid_out (pid_data_bcnt),
+        .write_enablepid (write_enablepid),
+        .para           (para), 
+        .target          (target)
+);
+
+
+wire [11:0] adc_data1;
+wire [11:0] adc_data2;
+tmu utmu(
+        .clk (clk)
+        ,.rstn (cpuresetn)
+        ,.adc_data1 (adc_data1)
+        ,.adc_data2 (adc_data2)
+        ,.data_cordic_in (cordic_data_bcnt)
+        ,.write_enablecordic (write_enablecordic)
+        ,.data_cordic_out (cordic_data_acnt),
+        .data_pid_in (pid_data_bcnt),
+        .data_pid_out (pid_data_acnt),
+        .write_enablepid (write_enablepid),
+        .para           (para), 
+        .target          (target)
+);
+
+
+adc2tmu adc_tmu1(
+        .clk    (clk)
+        ,.rstn  (cpuresetn)
+        ,.adc2tmu_en (adc2tmu1_en)
+        ,.adc_data_in (ADC_DATA1)
+        ,.adc_data_out (adc_data1)
+);
+
+adc2tmu adc_tmu2(
+        .clk    (clk)
+        ,.rstn  (cpuresetn)
+        ,.adc2tmu_en (adc2tmu2_en)
+        ,.adc_data_in (ADC_DATA2)
+        ,.adc_data_out (adc_data2)
 );
 
 wire pwmenable;
@@ -474,29 +534,15 @@ apb2pwm apb_pwm(
         .PWDATA         (PWDATA),
         .pwmenable      (pwmenable)
 );
-wire [11:0] adc_data1;
-adc2tmu adc_tmu(
-        .clk    (clk)
-        ,.rstn  (cpuresetn)
-        ,.adc2tmu_en (adc2tmu_en)
-        ,.adc_data_in (ADC_DATA)
-        ,.adc_data_out (adc_data1)
-);
-
-tmu utmu(
-        .clk (clk)
-        ,.rstn (cpuresetn)
-        ,.adc_data1 (adc_data1)
-        ,.data_cordic_in (cordic_data_bcnt)
-        ,.write_enablecordic (write_enablecordic)
-        ,.data_cordic_out (cordic_data_acnt)
-);
 //------------
 //adc sample
 //------------
 wire start;
 wire OE;
 wire EOC;
+wire sample_enable;
+assign sample_enable = sample_enable1 | sample_enable2;
+
 adc_sample uadc_sample(
         .clk            (clk),
         .rstn           (cpuresetn),
@@ -508,16 +554,24 @@ adc_sample uadc_sample(
 //--------------
 //adc
 //--------------
-adc uadc(
+adc uadc1(
         .clk            (clk),
         .rstn           (cpuresetn),
-        .anadata        (real_data),
+        .anadata        (real_data1),
         .start          (start),
         .OE             (OE),
         .EOC            (EOC),
-        .adc_data       (ADC_DATA)
+        .adc_data       (ADC_DATA1)
 );
-
+adc uadc2(
+        .clk            (clk),
+        .rstn           (cpuresetn),
+        .anadata        (real_data2),
+        .start          (start),
+        .OE             (OE),
+        .EOC            (EOC),
+        .adc_data       (ADC_DATA2)
+);
 //------------------------------------------------------------------------------
 // RAM
 //------------------------------------------------------------------------------

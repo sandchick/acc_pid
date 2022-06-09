@@ -36,12 +36,18 @@ Reset_Handler   PROC
 ;Inset a loop algorithm there;
               AREA template, CODE, READONLY
 start       PROC
-            LDR R0, =0x40000000            
+            LDR R0, =0x40001000            
             MOVS R1, #1
 			STR R1, [R0]
-            LDR R0, =0x40000004
+            LDR R0, =0x40001004
             STR R1, [R0]
-            LDR R2, =0x40001000
+            LDR R0, =0x40001008
+            LDR R1, =0x00000888
+            STR R1, [R0]
+            LDR R0, =0x40001010
+            LDR R1, =0x00000678
+            STR R1, [R0]
+            LDR R2, =0x40001004
             LDR R3, [R2]
             B start
             ENDP

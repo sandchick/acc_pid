@@ -17,8 +17,7 @@ module apb2tmu(
   output wire write_enablecordic,
   output wire write_enablepid,
   output reg [11:0] para,
-  output reg [11:0] target,
-  output reg [11:0] y
+  output reg [11:0] target
 
 );
 reg [31:0] read_mux_word;
@@ -32,7 +31,6 @@ assign  write_enable = PSEL & (~PENABLE) & PWRITE; // assert for 1st cycle of wr
 assign  write_enablecordic = write_enable & (PADDR[11:2] == 10'h000);
 assign  write_enablepid = write_enable & (PADDR[11:2] == 10'h001);
 assign  write_enabletarget = write_enable & (PADDR[11:2] == 10'h002);
-assign  write_enabley = write_enable & (PADDR[11:2] == 10'h003);
 assign  write_enablepara = write_enable & (PADDR[11:2] == 10'h004);
 always @(*) begin
    case(PADDR[3:2])
@@ -73,12 +71,7 @@ always @(posedge PCLK or negedge PRESETn) begin
     target <= PWDATA[11:0];
 end
 
-always @(posedge PCLK or negedge PRESETn) begin
-  if (~PRESETn)
-    y<= {12{1'b0}};
-  else if (write_enabley)
-    y<= PWDATA[11:0];
-end
+
 
 assign PRDATA = (read_enable) ? read_mux_word : {32{1'b0}};
 endmodule
