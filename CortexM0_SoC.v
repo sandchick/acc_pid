@@ -464,7 +464,10 @@ apb2adc apb_adc2 (
 );
 wire [11:0] cordic_data_acnt;//计算后的cordicdata
 wire [11:0] cordic_data_bcnt;//计算前的cordicdata
-
+wire [16:0] pid_data_acnt;//计算后的cordicdata
+wire [11:0] pid_data_bcnt;//计算前的cordicdata
+wire [11:0] para;
+wire [11:0] target;
 apb2tmu apb_tmu (      
         .PCLK           (clk),
         .PRESETn        (cpuresetn),

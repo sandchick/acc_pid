@@ -76,7 +76,7 @@ always @(posedge clk or negedge rstn) begin
   else if (write_enablecordic_reg)
   data_pid_mux <= data_pid;
   else 
-  data_cordic_mux <= adc_data2;
+  data_pid_mux  <= adc_data2;
 end
 
 pid u_pid(

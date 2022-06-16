@@ -24,7 +24,7 @@ error error_demo(.clk(clk),
 	            );
  
  
-wire signed [14:0] d_uk;// pid增量
+wire signed [16:0] d_uk;// pid增量
 incre_value incre_value_demo(.ek0(ek0),
 							 .ek1(ek1),
 							 .ek2(ek2),
